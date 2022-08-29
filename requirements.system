@@ -1,0 +1,12 @@
+linux-libc-dev
+libpthread-stubs0-dev
+libgmp-dev
+libmpfr-dev
+libmpfrc++-dev
+redis
+redis-server
+redis-tools
+libhiredis-dev
+libcrypto++6
+libcrypto++-dev
+libcrypto++-utils
