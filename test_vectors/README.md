@@ -1,0 +1,3 @@
+## Disjunctive (and CNF) Test Vectors
+
+This directory contains the test vectors for disjunctive search and CNF experiments. All of these files are generated using the source files present in `database` subdirectory fo the respective experiment subdirectories. These files must be copied to the test_vector subdirectory of respective experiments and the file paths (and parameters) should be accordingly updatd in the experiment source files.
