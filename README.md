@@ -121,8 +121,8 @@ The top-level Makefile contains the rules to build each component of the framewo
 Each experiment has its own Makefile or helper scripts and separate README files. Please browse through the README files for more details.
 
 - Databases [README](./databases/README.md)
-- Conjucntive [README](./conjunctive/README.md)
-- Dijucntive [README](./disjunctive/README.md)
+- Conjunctive [README](./conjunctive/README.md)
+- Disjunctive [README](./disjunctive/README.md)
 - DNF [README](./dnf/README.md)
 - CNF [README](./cnf/README.md)
 - Precision [README](./precision/README.md)
