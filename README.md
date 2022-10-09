@@ -4,7 +4,20 @@ This repository contains the source code used in the experiments of the paper "T
 
 ---
 
-## Repository Organisation
+# Table of Contents
+
+1. [Repository Organisation](#repoorg)
+2. [System Requirements](#sysreq)
+3. [Dependencies](#dependencies)
+4. [Database Format](#dbformat)
+5. [Primary Makefile](#primake)
+6. [Steps to Run Experiments](#runexp)
+7. [Troubleshooting and Remarks](#troubleremark)
+2. [Some paragraph](#paragraph1)
+    1. [Sub paragraph](#subparagraph1)
+3. [Another paragraph](#paragraph2)
+
+## Repository Organisation <a name="repoorg"></a>
 
 The repository is organised according to the TWINSSE experiments of the paper's main body, covering different queries, storage and precision evaluation. The following tree depicts the repository structure with individual subdirectories.
 
@@ -26,7 +39,7 @@ TWINSSE
 
 ---
 
-## System Requirements
+## System Requirements <a name="sysreq"></a>
 
 The framework requires heavy CPU-intensive computation and is intended for large multi-core servers with the minimal additional workload. We recommend the following system specifications.
 
@@ -46,7 +59,7 @@ The framework requires heavy CPU-intensive computation and is intended for large
 
 ---
 
-## Dependencies
+## Dependencies <a name="dependencies"></a>
 
 The following packages must be installed with global linkage
 
@@ -83,7 +96,7 @@ cat requirements.system | xargs sudo apt install
 
 ---
 
-## Database Format
+## Database Format <a name="dbformat"></a>
 
 The parsed databases are stored in csv format (with `.dat` extension) in the following way.
 ```csv
@@ -105,7 +118,8 @@ All kw and id values are 4 byte hex values (this can be changed if required). Pl
 
 ---
 
-## Primary Makefile
+## Primary Makefile <a name="primake"></a>
+
 The top-level Makefile contains the rules to build each component of the framework. The built executables need to be run manually. The Makefile contains the following rules.
 
 - __all__  - Builds conjunctive, disjunctive, dnf, cnf and precision executables
@@ -132,7 +146,7 @@ Each experiment has its own Makefile or helper scripts and separate README files
 
 ---
 
-## Steps to Run Experiments
+## Steps to Run Experiments <a name="runexp"></a>
 
 Compile Blake3 library
 ```C++
@@ -190,7 +204,7 @@ Details of each experiment and how to build each individually are available in r
 
 ---
 
-## Troubleshooting and Remarks
+## Troubleshooting and Remarks <a name="troubleremark"></a>
 
 The codebase has zero error handling, does not follow specific production-grade software development practices, and may contain bugs. Please ensure all parameters are appropriately set and the required files are available (especially those which need to be generated first) in the specific locations. Additionally, we present a stripped-down version of the databases for quick testing and debugging.
 
