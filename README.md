@@ -57,6 +57,9 @@ The framework requires heavy CPU-intensive computation and is intended for large
 
 - Minimum system load; if possible, no GUI and no other CPU/disk access-intensive task running
 
+
+If you have less number of threads available than configured in the source files, you may receive error while running the executable. Please ensure that you have the set the correct number of threads, and the value of the associated parameters (many of which in turn depend on the number of threds, please see below).
+
 ---
 
 ## Dependencies <a name="dependencies"></a>
@@ -91,8 +94,10 @@ All dependencies (except __redis++__ and __Blake3__) can be installed by executi
 
 ```bash
 sudo apt update
-cat requirements.system | xargs sudo apt install
+cat requirements.system | xargs sudo apt -y install
 ```
+
+**Please note that __redis++__ has to be installed manually after obtaining the source files from Github. We are working on automating this process.**
 
 ---
 
