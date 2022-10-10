@@ -128,7 +128,7 @@ The top-level Makefile contains the rules to build each component of the framewo
 
 - __clean__ - Cleans conjunctive, disjunctive, dnf, cnf and precision executables
 
-- __clean_all__ - Cleans conjunctive, disjunctive, dnf, cnf and precision executables including generated database files
+- __clean_all__ - Cleans conjunctive, disjunctive, dnf, cnf and precision executables including generated database files and Redis database
 
 - __blake_lib__ - Builds blake3 lib for conjunctive, disjunctive, dnf, and cnf subprojects
 
@@ -169,19 +169,25 @@ If needed, generate the test vectors for particular experiments (a set of test v
 
 Double-check all parameters and file paths. Ensure all necessary databases (including test vectors) are generated/available.
 
-Clean the projects by executing the following command in the TWINSSE directory.
+Clean the projects by executing the following command in the TWINSSE directory. This clears the generated databases (including the temporary ones) and clears the Redis database too.
 
 ```bash
 make clean_all
 ```
 
-Flush the Redis server using the following sequence of commands (includes commands to execute in the Redic CLI).
+The use can manually flush the Redis server (storing the database) using the following sequence of commands (includes commands to execute in the Redis CLI).
 
 ```bash
 $ redis-cli
 127.0.0.1:6379> flushall
 127.0.0.1:6379> save
 127.0.0.1:6379> quit
+```
+Alternatively, without going into ``redis-cli`` prompt.
+
+```bash
+$ redis-cli flushall
+$ redis-cli save
 ```
 
 Build all executables in all project subdirectories (conjunctive, disjunctive, CNF and DNF).
@@ -200,19 +206,19 @@ Go to each project subdirectory and execute `sse_setup` first and then `sse_sear
 ./sse_search
 ```
 
-Details of each experiment and how to build each individually are available in respective project READMEs. Each project can be built using by executing `make all` in the respective project subdirectory.
+Details of each experiment and how to build each individually are available in respective project READMEs. Each project can be built by executing `make all` in the respective project subdirectory.
 
-**Clean the project and Redis database before switching from one experiment to another**
+**Clean the project and Redis database before switching from one experiment to another!**
 
 ---
 
 ## Troubleshooting and Remarks <a name="troubleremark"></a>
 
-The codebase has zero error handling, does not follow specific production-grade software development practices, and may contain bugs. Please ensure all parameters are appropriately set and the required files are available (especially those which need to be generated first) in the specific locations. Additionally, we present a stripped-down version of the databases for quick testing and debugging.
+The codebase has absolutely no error handling, does not follow specific production-grade software development practices, and may contain bugs. Please ensure all parameters are appropriately set and the required files are available (especially those which need to be generated first) at the specific locations. Additionally, we present stripped-down versions of the main database for quick testing and debugging.
 
-Pointe related to specific experiments.
+Points related to specific experiments.
 
-- In conjunctive and DNF (or CNF) experiments, the result size might be 0 for a high number of queries. This is due to the sparse nature of the database, where a very large number of keywords have very low frequency, resulting in zero intersection. This is a correct search result with no id in the final result set.
+- In conjunctive and DNF (or CNF) experiments, the result size might be zero (or empty) for a high percentage of the queries. This is due to the sparse nature of the database, where a very large number of keywords have very low frequency, resulting in zero intersection. This is a correct search result with no id in the final result set.
 
 - The search time can widely vary depending upon the system configuration, parameters and load.
 
