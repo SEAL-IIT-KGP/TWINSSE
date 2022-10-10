@@ -11,3 +11,5 @@ clean_all: clean
 
 clean:
 	rm -rf *.o *.gch gen_db
+	@redis-cli flushall
+	@redis-cli save

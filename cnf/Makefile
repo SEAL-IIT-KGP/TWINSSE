@@ -17,3 +17,5 @@ clean:
 
 clean_all:
 	rm -rf *.o *.gch sse_setup sse_search eidxdb.csv bloom_filter.dat
+	@redis-cli flushall
+	@redis-cli save

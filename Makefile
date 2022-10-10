@@ -60,3 +60,7 @@ clean_all:
 	
 	@echo "\nCleaning all CNF...\n"
 	$(MAKE) -C ./cnf clean_all
+
+	@echo "\nCleaning Redis...\n"
+	redis-cli flushall
+	redis-cli save
