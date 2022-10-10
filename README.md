@@ -13,9 +13,6 @@ This repository contains the source code used in the experiments of the paper "T
 5. [Primary Makefile](#primake)
 6. [Steps to Run Experiments](#runexp)
 7. [Troubleshooting and Remarks](#troubleremark)
-2. [Some paragraph](#paragraph1)
-    1. [Sub paragraph](#subparagraph1)
-3. [Another paragraph](#paragraph2)
 
 ## Repository Organisation <a name="repoorg"></a>
 
@@ -97,7 +94,7 @@ sudo apt update
 cat requirements.system | xargs sudo apt -y install
 ```
 
-**Please note that __redis++__ has to be installed manually after obtaining the source files from Github. We are working on automating this process.**
+**Please note that __redis++__ has to be installed manually after obtaining the source files from Github. This process requires sudo access, which is a key reason to segregate __redis++__ installation from the above dependency configuration process. We are working on automating the __redis++__ installation process (combining with the dependency installation process).**
 
 ---
 
