@@ -604,9 +604,8 @@ int EDB_SetUp()
             FPGA_BLOOM_HASH(gfp_kwx_local,bhash);
 
             for(int j=0;j<N_HASH;++j){
-                //17 bits for db6k.csv
-                bf_indices[j] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0xFF) << 8) + ((bhash[64*j+2] & 0x01) << 16);
-                // bf_indices[j] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0x03) << 8);
+                bf_indices[j] = BFIdxConv(bhash+(64*j),N_BF_BITS);
+                // bf_indices[j] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0xFF) << 8) + ((bhash[64*j+2] & 0x01) << 16);
             }
 
             BloomFilter_Set(BF, bf_indices);
@@ -836,9 +835,8 @@ int EDB_Search(unsigned char *query_str, int NWords)
                 FPGA_BLOOM_HASH(xtg_local,bhash);
 
                 for(int j=0;j<N_HASH;++j){
-                    //17 bits db6k.dat
-                    bf_n_indices[j][i] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0xFF) << 8) + ((bhash[64*j+2] & 0x01) << 16);
-                    // bf_n_indices[j][i] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0x03) << 8);
+                    bf_n_indices[j][i] = BFIdxConv(bhash+(64*j),N_BF_BITS);
+                    // bf_n_indices[j][i] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0xFF) << 8) + ((bhash[64*j+2] & 0x01) << 16);
                 }
 
                 xtg_local +=32;
@@ -1610,4 +1608,24 @@ int StrToHexBVec(unsigned char *hexarr,string bvec)
         hexarr[j] = ::strtoul(temp,nullptr,16) & 0xFF;
     }
     return 0;
+}
+
+unsigned int BFIdxConv(unsigned char *hex_arr,unsigned int n_bits)
+{
+    unsigned int idx_val = 0;
+    unsigned int n_bytes = n_bits/8;
+    unsigned int n_bits_rem = n_bits%8;
+    unsigned char tmp_char;
+    
+    for(unsigned int i=0;i<n_bytes;++i){
+        idx_val = (idx_val << 8) | hex_arr[i];
+    }
+
+    if(n_bits_rem != 0){
+        tmp_char = hex_arr[n_bytes];
+        tmp_char = tmp_char >> (8 - n_bits_rem);
+        idx_val = (idx_val << n_bits_rem) | tmp_char;
+    }
+
+    return idx_val;
 }

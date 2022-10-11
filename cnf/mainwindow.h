@@ -173,5 +173,6 @@ std::string HexToStr(unsigned char *hexarr,int len=16);
 std::string NumToHexStr(int num);
 int StrToHex(unsigned char *hexarr,string numin);
 int StrToHexBVec(unsigned char *hexarr,string bvec);
+unsigned int BFIdxConv(unsigned char *hex_arr,unsigned int n_bits);
 
 #endif // MAINWINDOW_H

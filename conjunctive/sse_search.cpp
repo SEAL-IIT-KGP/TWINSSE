@@ -18,17 +18,11 @@
 
 using namespace std;
 
-// db6k.dat
-int N_keywords = 6043; //Number of keywords
-int N_max_ids = 1809; // Maximum number of ids for a kw -- or maximum frequency of a kw
-
-//sample database
-// int N_keywords = 32;
-// int N_max_ids = 46;
+int N_keywords = 0; //Number of keywords
+int N_max_ids = 0; // Maximum number of ids for a kw -- or maximum frequency of a kw
 
 int N_row_ids = N_max_ids;
 
-// string widxdb_file = "sample_database.csv";//Raw enron database
 string widxdb_file = "../databases/db6k.csv";//Raw enron database
 string eidxdb_file = "eidxdb.csv";//Encrypted meta-keyword database
 string bloomfilter_file = "bloom_filter.dat";//Bloom filter file
@@ -73,7 +67,7 @@ unsigned char *GL_MGDB_LBL;
 
 unsigned int *GL_OPCODE;
 
-unsigned int N_threads = 24;
+unsigned int N_threads = 16;
 
 std::mutex mrun;
 std::condition_variable dataReady;
@@ -85,23 +79,88 @@ bool processed = false;
 size_t nWorkerCount = N_threads; //Number of threads
 int nCurrentIteration = 0;
 
-std::vector<thread> thread_pool(N_threads);
+std::vector<thread> thread_pool;
 
-int sym_block_size = N_threads * 16;
-int ecc_block_size = N_threads * 32;
-int hash_block_size = N_threads * 64;
-int bhash_block_size = N_threads * 64;
-int bhash_in_block_size = N_threads * 40;
+int sym_block_size = 0;
+int ecc_block_size = 0;
+int hash_block_size = 0;
+int bhash_block_size = 0;
+int bhash_in_block_size = 0;
+int N_HASH = 0;
+int MAX_BF_BIN_SIZE = 0;
+int N_BF_BITS = 0;
 
+//Keeping all same for the debugging and experimental purpose
 unsigned char KS[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0x88,0x09,0xCF,0x4F,0x3C};
 unsigned char KI[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0x88,0x09,0xCF,0x4F,0x3C};
 unsigned char KZ[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0x88,0x09,0xCF,0x4F,0x3C};
 unsigned char KX[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0x88,0x09,0xCF,0x4F,0x3C};
 unsigned char KT[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0x88,0x09,0xCF,0x4F,0x3C};
 
+int ReadConf(std::string db_conf_filename)
+{
+    std::ifstream input_file(db_conf_filename);
+    std::string line;
+
+    if (input_file.good()) {
+        line.clear();
+        getline(input_file,line);
+        widxdb_file = line;
+        
+        line.clear();
+        getline(input_file,line);
+        N_threads = std::stoi(line);
+        
+        line.clear();
+        getline(input_file,line); 
+        N_keywords = std::stoi(line);
+
+        line.clear();
+        getline(input_file,line);
+        N_max_ids = std::stoi(line);
+
+        line.clear();
+        getline(input_file,line);
+        MAX_BF_BIN_SIZE = std::stoi(line);
+
+        line.clear();
+        getline(input_file,line);
+        N_BF_BITS = std::stoi(line);
+
+        nWorkerCount = N_threads;
+        N_row_ids = N_max_ids;
+
+        sym_block_size = N_threads * 16;
+        ecc_block_size = N_threads * 32;
+        hash_block_size = N_threads * 64;
+        bhash_block_size = N_threads * 64;
+        bhash_in_block_size = N_threads * 40;
+
+        N_HASH = N_threads;
+    }
+    else{
+        std::cout << "Error reading database configuration file" << std::endl;
+        return -1;
+    }
+
+    input_file.close();
+
+
+    std::cout << "File path: " << widxdb_file << std::endl;
+    std::cout << "N_threads: " << N_threads << std::endl;
+    std::cout << "Number of keywords: " << N_keywords << std::endl;
+    std::cout << "Maximum number of ids: " << N_max_ids << std::endl;
+    std::cout << "Bloom filter size: " << MAX_BF_BIN_SIZE << std::endl;
+    std::cout << "Bloom filter address bits: " << N_BF_BITS << std::endl;
+
+    return 0;
+}
+
 int main()
 {
     cout << "Starting program..." << endl;
+
+    ReadConf("../configuration/db6k.conf");
 
     UIDX = new unsigned char[16*N_max_ids];
     ::memset(UIDX,0x00,16*N_max_ids);
@@ -189,10 +248,6 @@ int main()
     std::vector<unsigned int> idx_sorted;
     std::vector<unsigned int> freq_sorted;
     std::vector<std::string> kw_sorted;
-
-    // res_query_file_handle.open(res_query_file,std::ios_base::out);
-    // res_id_file_handle.open(res_id_file,std::ios_base::out);
-    // res_time_file_handle.open(res_time_file,std::ios_base::out);
 
     unsigned int nm = 0;
     unsigned char row_vec[2048]; //16 bytes * Number of keywords in the query

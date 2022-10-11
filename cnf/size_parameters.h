@@ -6,9 +6,8 @@ extern int N_max_ids;
 extern int N_row_ids;
 extern int BF_length;
 
-#define N_HASH 24 //Set this equal to number of threads used
-
-// meta_db6k.csv
-#define MAX_BF_BIN_SIZE 2097152 //21 bits
+extern int N_HASH;
+extern int MAX_BF_BIN_SIZE;
+extern int N_BF_BITS;
 
 #endif // SIZEPARAMETERS_H
