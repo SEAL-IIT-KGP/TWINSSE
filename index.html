@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sealiitkgphomepage</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="twinsse">TWINSSE</h1>
+<p>This repository contains the source code used in the experiments of the paper “TWo-IN-one-SSE: Fast, Scalable and Storage-Efficient Searchable Symmetric Encryption for Conjunctive and Disjunctive Boolean Queries” (accepted for publication at PETS 2023, Issue 1).</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#repoorg">Repository Organisation</a></li>
+<li><a href="#sysreq">System Requirements</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#dbformat">Database Format</a></li>
+<li><a href="#primake">Primary Makefile</a></li>
+<li><a href="#runexp">Steps to Run Experiments</a></li>
+<li><a href="#troubleremark">Troubleshooting and Remarks</a></li>
+</ol>
+<hr>
+<h2 id="repository-organisation-a-namerepoorga">Repository Organisation <a></a></h2>
+<p>The repository is organised according to the TWINSSE experiments of the paper’s main body, covering different queries, storage and precision evaluation. The following tree depicts the repository structure with individual subdirectories.</p>
+<pre><code>TWINSSE
+|--README.md
+|--requirements.system
+|--Makefile
+|____databases
+|____conjunctive
+|____disjunctive
+|____cnf
+|____dnf
+|____precision
+|____scripts
+|____storage
+|____test_vectors
+</code></pre>
+<hr>
+<h2 id="system-requirements-a-namesysreqa">System Requirements <a></a></h2>
+<p>The framework requires heavy CPU-intensive computation and is intended for large multi-core servers with the minimal additional workload. We recommend the following system specifications.</p>
+<ul>
+<li>
+<p>Intel® Xeon v5 or higher server grade (Xeon Gold or higher) multi-core 64-bit CPUs</p>
+</li>
+<li>
+<p>At least 24-48 physical CPU cores (with dual thread) with base frequency higher than 2 GHz. Should work with lower number of cores (8-16 physical cores), but the performance will get affected.</p>
+</li>
+<li>
+<p>64-128 GB RAM or higher</p>
+</li>
+<li>
+<p>256 GB PCIe Gen4 NVMe SSD or higher</p>
+</li>
+<li>
+<p>Ubuntu 18.04 LTS or 20.04 LTS 64 bit</p>
+</li>
+<li>
+<p>ISA support: SSE, SSE2, SSE3, SSE4, AVX2, AVX512, AES Intrinsics</p>
+</li>
+<li>
+<p>Minimum system load; if possible, no GUI and no other CPU/disk access-intensive task running</p>
+</li>
+</ul>
+<p>If you have less number of threads available than configured in the source files, you may receive error while running the executable. Please ensure that you have the set the correct number of threads, and the value of the associated parameters (many of which in turn depend on the number of threds, please see below).</p>
+<hr>
+<h2 id="dependencies-a-namedependenciesa">Dependencies <a></a></h2>
+<p>The following packages must be installed with global linkage</p>
+<ul>
+<li>
+<p>POSIX pthread</p>
+</li>
+<li>
+<p>GNU GMP Multi-precision library with C++ wrappers (including MPFR)</p>
+</li>
+<li>
+<p>Redis base package, hiredis base package, and redis++ C++ wrapper</p>
+</li>
+<li>
+<p>Blake3 hash</p>
+</li>
+<li>
+<p>CryptoPP (or Crypto++)</p>
+</li>
+</ul>
+<p>[Pthread] <code>linux-libc-dev</code> v4.15.0-191.202, <code>libpthread-stubs0-dev</code> v0.3-4</p>
+<p>[GMP] <code>libgmp-dev</code> v6.1.2, <code>libmpfr-dev</code> v4.0.1, <code>libmpfrc++-dev</code> v3.6.5</p>
+<p>[Redis] <code>redis</code> v5:4.0.9, <code>redis-server</code> v5:4.0.9, <code>redis-tools</code> v5:4.0.9, <code>libhiredis-dev</code> v0.13.3-2.2</p>
+<p>[redis++] Install from <a href="https://github.com/sewenew/redis-plus-plus">https://github.com/sewenew/redis-plus-plus</a></p>
+<p>[Blake3] Supplied with the source code, execute <code>make lib</code> inside <strong>blake</strong> subdirectory</p>
+<p>[CryptoPP] <code>libcrypto++-dev</code> v5.6.4, <code>libcrypto++-utils</code> v5.6.4, <code>libcrypto++6</code> v5.6.4</p>
+<hr>
+<p>All dependencies (except <strong>redis++</strong> and <strong>Blake3</strong>) can be installed by executing the following command in the TWINSSE home directory. Note that, it <em>requires sudo access</em>.</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token function">sudo</span> apt update
+<span class="token function">cat</span> requirements.system <span class="token operator">|</span> <span class="token function">xargs</span> <span class="token function">sudo</span> apt -y <span class="token function">install</span>
+</code></pre>
+<p><strong>Please note that <strong>redis++</strong> has to be installed manually after obtaining the source files from Github. This process requires sudo access, which is a key reason to segregate <strong>redis++</strong> installation from the above dependency configuration process. We are working on automating the <strong>redis++</strong> installation process (combining with the dependency installation process).</strong></p>
+<hr>
+<h2 id="database-format-a-namedbformata">Database Format <a></a></h2>
+<p>The parsed databases are stored in csv format (with <code>.dat</code> extension) in the following way.</p>
+<pre class=" language-csv"><code class="prism  language-csv">kw0, id00,id01,id02,....
+kw1, id10,id11,id12,....
+kw2, id20,id21,id22,....
+</code></pre>
+<p>This is applicable to meta-keyword databases too.</p>
+<pre class=" language-csv"><code class="prism  language-csv">mkw0, id00,id01,id02,....
+mkw1, id10,id11,id12,....
+mkw2, id20,id21,id22,....
+</code></pre>
+<p>All kw and id values are 4 byte hex values (this can be changed if required). Please keep in mind where <code>.dat</code> and <code>.csv</code> extensions are used while modifying the source files. Otherwise, the files will not be read.</p>
+<hr>
+<h2 id="primary-makefile-a-nameprimakea">Primary Makefile <a></a></h2>
+<p>The top-level Makefile contains the rules to build each component of the framework. The built executables need to be run manually. The Makefile contains the following rules.</p>
+<ul>
+<li>
+<p><strong>all</strong>  - Builds conjunctive, disjunctive, dnf, cnf and precision executables</p>
+</li>
+<li>
+<p><strong>clean</strong> - Cleans conjunctive, disjunctive, dnf, cnf and precision executables</p>
+</li>
+<li>
+<p><strong>clean_all</strong> - Cleans conjunctive, disjunctive, dnf, cnf and precision executables including generated database files and Redis database</p>
+</li>
+<li>
+<p><strong>blake_lib</strong> - Builds blake3 lib for conjunctive, disjunctive, dnf, and cnf subprojects</p>
+</li>
+</ul>
+<hr>
+<p>Each experiment has its own Makefile or helper scripts and separate README files. Please browse through the README files for more details.</p>
+<ul>
+<li>Databases <a href="./databases/README.md">README</a></li>
+<li>Conjunctive <a href="./conjunctive/README.md">README</a></li>
+<li>Disjunctive <a href="./disjunctive/README.md">README</a></li>
+<li>DNF <a href="./dnf/README.md">README</a></li>
+<li>CNF <a href="./cnf/README.md">README</a></li>
+<li>Precision <a href="./precision/README.md">README</a></li>
+<li>Storage <a href="./storage/README.md">README</a></li>
+<li>Scripts <a href="./scripts/README.md">README</a></li>
+<li>Test vectors <a href="./test_vectors/README.md">README</a></li>
+</ul>
+<hr>
+<h2 id="steps-to-run-experiments-a-namerunexpa">Steps to Run Experiments <a></a></h2>
+<p>Compile Blake3 library</p>
+<pre class=" language-c"><code class="prism ++ language-c">make blake_lib
+</code></pre>
+<p>Set parameters for each experiment as listed above. Go to each specific directory for instructions in README files.</p>
+<p>Generate the meta-keywords databases in project <em>subdirectories</em> (not from the top-level TWINSSE directory) by executing the following command in the <code>database</code> subdirectory (not the top-level <a href="./databases/"><code>databases</code></a> directory) for with the project directory (does not apply to conjunctive and DNF).</p>
+<pre class=" language-c"><code class="prism ++ language-c">make all <span class="token comment">//within database subdirectory</span>
+</code></pre>
+<p>Set the meta-keyword database parameters in the source files of the respective projects (see associated README files). This does not apply to conjunctive and DNF experiments.</p>
+<p>If needed, generate the test vectors for particular experiments (a set of test vectors are already supplied inside the repository).</p>
+<p>Double-check all parameters and file paths. Ensure all necessary databases (including test vectors) are generated/available.</p>
+<p>Clean the projects by executing the following command in the TWINSSE directory. This clears the generated databases (including the temporary ones) and clears the Redis database too.</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token function">make</span> clean_all
+</code></pre>
+<p>The use can manually flush the Redis server (storing the database) using the following sequence of commands (includes commands to execute in the Redis CLI).</p>
+<pre class=" language-bash"><code class="prism  language-bash">$ redis-cli
+127.0.0.1:6379<span class="token operator">&gt;</span> flushall
+127.0.0.1:6379<span class="token operator">&gt;</span> save
+127.0.0.1:6379<span class="token operator">&gt;</span> quit
+</code></pre>
+<p>Alternatively, without going into <code>redis-cli</code> prompt.</p>
+<pre class=" language-bash"><code class="prism  language-bash">$ redis-cli flushall
+$ redis-cli save
+</code></pre>
+<p>Build all executables in all project subdirectories (conjunctive, disjunctive, CNF and DNF).</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token function">make</span> all
+</code></pre>
+<p>Go to each project subdirectory and execute <code>sse_setup</code> first and then <code>sse_search</code>.</p>
+<pre class=" language-bash"><code class="prism  language-bash">./sse_setup
+</code></pre>
+<pre class=" language-bash"><code class="prism  language-bash">./sse_search
+</code></pre>
+<p>Details of each experiment and how to build each individually are available in respective project READMEs. Each project can be built by executing <code>make all</code> in the respective project subdirectory.</p>
+<p><strong>Clean the project and Redis database before switching from one experiment to another!</strong></p>
+<hr>
+<h2 id="troubleshooting-and-remarks-a-nametroubleremarka">Troubleshooting and Remarks <a></a></h2>
+<p>The codebase has absolutely no error handling, does not follow specific production-grade software development practices, and may contain bugs. Please ensure all parameters are appropriately set and the required files are available (especially those which need to be generated first) at the specific locations. Additionally, we present stripped-down versions of the main database for quick testing and debugging.</p>
+<p>Points related to specific experiments.</p>
+<ul>
+<li>
+<p>In conjunctive and DNF (or CNF) experiments, the result size might be zero (or empty) for a high percentage of the queries. This is due to the sparse nature of the database, where a very large number of keywords have very low frequency, resulting in zero intersection. This is a correct search result with no id in the final result set.</p>
+</li>
+<li>
+<p>The search time can widely vary depending upon the system configuration, parameters and load.</p>
+</li>
+<li>
+<p>If program is abruptly terminated, check file paths and parameter values are properly set.</p>
+</li>
+<li>
+<p>If program is abruptly terminated, try to execute the program with logging the output to a log file in the following way.</p>
+</li>
+</ul>
+<pre class=" language-bash"><code class="prism  language-bash">./sse_setup <span class="token operator">&gt;</span> log.txt
+</code></pre>
+<p>Not sure why this is happening, but this temporary fix works. We are working on fixing it.</p>
+<hr>
+<h2 id="references">References</h2>
+<p>OXT SSE Algorithm</p>
+<pre><code>Cash, David, et al. "Highly-scalable searchable symmetric encryption with support for boolean queries." Annual cryptology conference. Springer, Berlin, Heidelberg, 2013.
+</code></pre>
+<p>Blake3 Hash Development Repository</p>
+<p><a href="https://github.com/BLAKE3-team/BLAKE3">https://github.com/BLAKE3-team/BLAKE3</a></p>
+<p>Crypto++ library</p>
+<p><a href="https://cryptopp.com/">https://cryptopp.com/</a></p>
+<p>Redis++</p>
+<p><a href="https://github.com/sewenew/redis-plus-plus">https://github.com/sewenew/redis-plus-plus</a></p>
+<hr>
+<h2 id="cite">Cite</h2>
+<p>The full vesion is available at <a href="https://eprint.iacr.org/2022/1096/">IACR ePrint</a>. To cite, use the following bib entry.</p>
+<pre class=" language-bib"><code class="prism  language-bib">@misc{cryptoeprint:2022/1096,
+      author = {Arnab Bag and Debadrita Talapatra and Ayushi Rastogi and Sikhar Patranabis and Debdeep Mukhopadhyay},
+      title = {TWo-IN-one-SSE: Fast, Scalable and Storage-Efficient Searchable Symmetric Encryption for Conjunctive and Disjunctive Boolean Queries},
+      howpublished = {Cryptology ePrint Archive, Paper 2022/1096},
+      year = {2022},
+      note = {\url{https://eprint.iacr.org/2022/1096}},
+      url = {https://eprint.iacr.org/2022/1096}
+}
+</code></pre>
+</div>
+</body>
+
+</html>
