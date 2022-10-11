@@ -1,6 +1,6 @@
 # TWINSSE
 
-This repository contains the source code used in the experiments of the paper "TWo-IN-one-SSE: Fast, Scalable and Storage-Efficient Searchable Symmetric Encryption for Conjunctive and Disjunctive Boolean Queries" (accepted for publication at PETS 2023, Issue 1).
+This reposiroty contains the source codes for the expreiments presented in the paper "__TWo-IN-one-SSE: Fast, Scalable and Storage-Efficient Searchable Symmetric Encryption for Conjunctive and Disjunctive Boolean Queries__" (PETS 2023, Issue 1).
 
 ---
 
@@ -18,7 +18,7 @@ This repository contains the source code used in the experiments of the paper "T
 
 ## Repository Organisation <a name="repoorg"></a>
 
-The repository is organised according to the TWINSSE experiments of the paper's main body, covering different queries, storage and precision evaluation. The following tree depicts the repository structure with individual subdirectories.
+The repository is organised according to the TWINSSE experiments presented in the paper's main body covering experiments on different types of queries, storage and precision evaluation. The following directory tree shows the repository structure with subdirectories for individual experiments.
 
 ```
 TWINSSE
@@ -40,11 +40,11 @@ TWINSSE
 
 ## System Requirements <a name="sysreq"></a>
 
-The framework requires heavy CPU-intensive computation and is intended for large multi-core servers with the minimal additional workload. We recommend the following system specifications.
+The TWINSSE framework requires heavy CPU-intensive computation and is intended for large multi-core server systems with minimal additional workload. We recommend the following system specifications.
 
 - Intel(R) Xeon v5 or higher server grade (Xeon Gold or higher) multi-core 64-bit CPUs
 
-- At least 24-48 physical CPU cores (with dual thread) with base frequency higher than 2 GHz. Should work with lower number of cores (8-16 physical cores), but the performance will get affected.
+- At least 24-48 physical CPU cores (with dual thread) with base frequency higher than 2 GHz. The codebase should work with lower number of cores (8-16 physical cores), but the performance is expected to be degraded.
 
 - 64-128 GB RAM or higher
 
@@ -54,10 +54,10 @@ The framework requires heavy CPU-intensive computation and is intended for large
 
 - ISA support: SSE, SSE2, SSE3, SSE4, AVX2, AVX512, AES Intrinsics
 
-- Minimum system load; if possible, no GUI and no other CPU/disk access-intensive task running
+- Minimum system load; if possible, no GUI and no other CPU/disk access-intensive task running concurrently
 
 
-If you have less number of threads available than configured in the source files, you may receive error while running the executable. Please ensure that you have the set the correct number of threads, and the value of the associated parameters (many of which in turn depend on the number of threds, please see below).
+Please ensure the number of threads is properly set according to the number of available threads. Otherwise, there might be errors while running the executable(s). Also, double check the values of the associated parameters (many of which in turn depend on the number of threds, please see below).
 
 ---
 
@@ -96,7 +96,7 @@ sudo apt update
 cat requirements.system | xargs sudo apt -y install
 ```
 
-**Please note that __redis++__ has to be installed manually after obtaining the source files from Github. This process requires sudo access, which is a key reason to segregate __redis++__ installation from the above dependency configuration process. We are working on automating the __redis++__ installation process (combining with the dependency installation process).**
+**Please note that __redis++__ has to be installed manually after obtaining the source files from Github [here](https://github.com/sewenew/redis-plus-plus). This process requires sudo access, which is a key reason to segregate __redis++__ installation from the above dependency configuration process. We are working on automating the __redis++__ installation process (combining with the dependency installation process).**
 
 ---
 
