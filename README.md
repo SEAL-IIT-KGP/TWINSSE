@@ -4,7 +4,7 @@ This repository contains the source code used in the experiments of the paper "T
 
 ---
 
-# Table of Contents
+## Table of Contents
 
 1. [Repository Organisation](#repoorg)
 2. [System Requirements](#sysreq)
@@ -13,6 +13,8 @@ This repository contains the source code used in the experiments of the paper "T
 5. [Primary Makefile](#primake)
 6. [Steps to Run Experiments](#runexp)
 7. [Troubleshooting and Remarks](#troubleremark)
+
+---
 
 ## Repository Organisation <a name="repoorg"></a>
 
@@ -50,7 +52,7 @@ The framework requires heavy CPU-intensive computation and is intended for large
 
 - Ubuntu 18.04 LTS or 20.04 LTS 64 bit
 
-- ISA support needed: SSE, SSE2, SSE3, SSE4, AVX2, AVX512, AES IntrinsicsA
+- ISA support: SSE, SSE2, SSE3, SSE4, AVX2, AVX512, AES Intrinsics
 
 - Minimum system load; if possible, no GUI and no other CPU/disk access-intensive task running
 
@@ -222,7 +224,15 @@ Points related to specific experiments.
 
 - The search time can widely vary depending upon the system configuration, parameters and load.
 
-- If program is aboruptly termninated, check file paths and parameter values are properly set.
+- If program is abruptly terminated, check file paths and parameter values are properly set.
+
+- If program is abruptly terminated, try to execute the program with logging the output to a log file in the following way.
+
+```bash
+./sse_setup > log.txt
+```
+
+Not sure why this is happening, but this temporary fix works. We are working on fixing it.
 
 ---
 
