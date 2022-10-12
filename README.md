@@ -26,6 +26,7 @@ TWINSSE
 |--requirements.system
 |--Makefile
 |____databases
+|____configuration
 |____conjunctive
 |____disjunctive
 |____cnf
@@ -139,6 +140,7 @@ The top-level Makefile contains the rules to build each component of the framewo
 Each experiment has its own Makefile or helper scripts and separate README files. Please browse through the README files for more details.
 
 - Databases [README](./databases/README.md)
+- Configuration [README](./configuration/README.md)
 - Conjunctive [README](./conjunctive/README.md)
 - Disjunctive [README](./disjunctive/README.md)
 - DNF [README](./dnf/README.md)
