@@ -97,35 +97,77 @@ unsigned char KZ[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0
 unsigned char KX[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0x88,0x09,0xCF,0x4F,0x3C};
 unsigned char KT[16] = {0x2B,0x7E,0x15,0x16,0x28,0xAE,0xD2,0xA6,0xAB,0xF7,0x15,0x88,0x09,0xCF,0x4F,0x3C};
 
-int ReadConf(std::string db_conf_filename)
+int ReadConfAll(std::string db_conf_filename)
 {
     std::ifstream input_file(db_conf_filename);
     std::string line;
 
     if (input_file.good()) {
+        //Line 1 -- plain database file name
         line.clear();
         getline(input_file,line);
         widxdb_file = line;
         
+        //Line 2 -- number of cores
         line.clear();
         getline(input_file,line);
         N_threads = std::stoi(line);
         
+        //Line 3 -- number of keywords in the plain database
         line.clear();
         getline(input_file,line); 
         N_keywords = std::stoi(line);
 
+        //Line 4 -- maximum number of docuement identifiers for a keyword in the plain database
         line.clear();
         getline(input_file,line);
         N_max_ids = std::stoi(line);
 
+        //Line 5 -- Plain DB Bloom filter size -- typically a power of 2, next to the total number keyword-id pairs
         line.clear();
         getline(input_file,line);
         MAX_BF_BIN_SIZE = std::stoi(line);
 
+        //Line 6 -- Number of bits to address plain DB Bloom filter -- typically the n in 2^n of BF size
         line.clear();
         getline(input_file,line);
         N_BF_BITS = std::stoi(line);
+
+        ///////////////////////////////////////////////////////////////////////
+        //Needs to read meta-db parameters
+        //Existing values will get overwritten! I know not a good way to do this, but fine for now.
+
+        //Line 7 -- meta database file name
+        line.clear();
+        getline(input_file,line);
+        widxdb_file = line;
+        
+        //Line 8 -- number of cores to use for metadb
+        line.clear();
+        getline(input_file,line);
+        N_threads = std::stoi(line);
+        
+        //Line 9 -- number of metakeywords in the meta database
+        line.clear();
+        getline(input_file,line); 
+        N_keywords = std::stoi(line);
+
+        //Line 10 -- maximum number of docuement identifiers for a metakeyword in the plain database
+        line.clear();
+        getline(input_file,line);
+        N_max_ids = std::stoi(line);
+
+        //Line 11 -- meta DB Bloom filter size -- typically a power of 2, next to the total number metakeyword-id pairs
+        line.clear();
+        getline(input_file,line);
+        MAX_BF_BIN_SIZE = std::stoi(line);
+
+        //Line 12 -- Number of bits to address meta DB Bloom filter -- typically the n in 2^n of meta BF size
+        line.clear();
+        getline(input_file,line);
+        N_BF_BITS = std::stoi(line);
+
+        ///////////////////////////////////////////////////////////////////////
 
         nWorkerCount = N_threads;
         N_row_ids = N_max_ids;
@@ -160,7 +202,7 @@ int main()
 {
     cout << "Starting program..." << endl;
 
-    ReadConf("../configuration/meta_db6k.conf");
+    ReadConfAll("../configuration/db6k.conf");
 
     UIDX = new unsigned char[16*N_max_ids];
     ::memset(UIDX,0x00,16*N_max_ids);

@@ -2,29 +2,29 @@ all:
 	@echo "\nBuilding precision...\n"
 	$(MAKE) -C ./precision all
 	
-	@echo "\nBilding conjuntive...\n"
+	@echo "\nBuilding conjunctive...\n"
 	$(MAKE) -C ./conjunctive all
 	
-	@echo "\nBilding disjuntive...\n"
+	@echo "\nBuilding disjunctive...\n"
 	$(MAKE) -C ./disjunctive all
 	
-	@echo "\nBilding DNF...\n"
+	@echo "\nBuilding DNF...\n"
 	$(MAKE) -C ./dnf all
 	
-	@echo "\nBilding CNF...\n"
+	@echo "\nBuilding CNF...\n"
 	$(MAKE) -C ./cnf all
 
 blake_lib:
-	@echo "\nCompling Blake3 lib in conjuntive...\n"
+	@echo "\nCompiling Blake3 lib in conjunctive...\n"
 	$(MAKE) -C ./conjunctive/blake3/ lib
 	
-	@echo "\nCompling Blake3 lib in disjuntive...\n"
+	@echo "\nCompiling Blake3 lib in disjunctive...\n"
 	$(MAKE) -C ./disjunctive/blake3/ lib
 	
-	@echo "\nCompling Blake3 lib in DNF...\n"
+	@echo "\nCompiling Blake3 lib in DNF...\n"
 	$(MAKE) -C ./dnf/blake3/ lib
 	
-	@echo "\nCompling Blake3 lib in CNF...\n"
+	@echo "\nCompiling Blake3 lib in CNF...\n"
 	$(MAKE) -C ./cnf/blake3/ lib
 
 .PHONEY: clean clean_all
