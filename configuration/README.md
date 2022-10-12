@@ -34,3 +34,31 @@ The configuration file for the database [supplied](../databases/) as provided in
 2097152
 21
 ```
+
+## Detailed specification
+
+Each line contains a parameter value/string. Do not put whitespace. Try to avoid whitespaces in filepaths.
+
+__Line 1__: _(string)_ Path to plain database file containing the inverted index of keyword and documents identifiers
+
+__Line 2__: _(integer)_ Number of threads to use while processing (or executing any setup or search) over the plain database. The conjunctive and the DNF experiments use this value.
+
+__Line 3__: _(integer)_ Number of unique keywords in the plain database. This is necessary for allocating memory.
+
+__Line 4__: _(integer)_ Maximum number of document identifiers for a keyword in the plain database. This is necessary for allocating memory.
+
+__Line 5__: _(integer)_ The size of the Bloom filter (number of addresses/elements) for the plain database. The conjunctive and the DNF experiments use this value. This a value which is a power of 2 just larger than the total number of unique keyword-id pair in the plain database.
+
+__Line 6__: _(integer)_ Number of bits required to address the above Bloom filter. For example, if the Bloom filter size is $2^n$, then number of bits required to address is $n$.
+
+__Line 7__: _(string)_ Path to the metakeyword database file containing the metakeywords and the associated document identifiers.
+
+__Line 8__: _(integer)_ Number of threads to use while processing (while executing setup and search) metakeyword database. The disjunctive and the CNF experiments use this value
+
+__Line 9__: _(integer)_ Number of metakeywords in the metakeyword database. This is necessary for allocating memory.
+
+__Line 10__: _(integer)_ Maximum number of document identifiers for a metakeyword in the metakeyword database. This is necessary for allocating memory.
+
+__Line 11__: _(integer)_ The size of the Bloom filter (number of addresses/elements) for the metakeyword database. The disjunctive and the CNF experiments use this value. This a value which is a power of 2 just larger than the total number of unique metakeyword-id pair in the metakeyword database.
+
+__Line 12__: _(integer)_ Number of bits required to address the above Bloom filter. For example, if the Bloom filter size is $2^n$, then number of bits required to address is $n$.
