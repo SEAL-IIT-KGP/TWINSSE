@@ -97,6 +97,8 @@ sudo apt update
 cat requirements.system | xargs sudo apt -y install
 ```
 
+The above dependecies need to be installed before building and installing __redis++__.
+
 **Please note that __redis++__ has to be installed manually after obtaining the source files from Github [here](https://github.com/sewenew/redis-plus-plus). This process requires _sudo_ access, which is a key reason to segregate __redis++__ installation from the above dependency configuration process. We are working on automating the __redis++__ installation process (combining with the dependency installation process) in a safe way.**
 
 ---
@@ -105,19 +107,26 @@ cat requirements.system | xargs sudo apt -y install
 
 The parsed databases are stored in csv format (with `.dat` extension) in the following way (similar to a csv file, with each line ending with a comma).
 ```csv
-kw0, id00,id01,id02,....,
-kw1, id10,id11,id12,....,
-kw2, id20,id21,id22,....,
+kw0, id00,id01,id02,...,id0n,
+kw1, id10,id11,id12,...,id1n,
+kw2, id20,id21,id22,...,id2n,
+.
+.
+.
 ```
 
-This is applicable to meta-keyword databases too.
+This is applicable to generated meta-keyword databases too.
 
 ```csv
-mkw0, id00,id01,id02,....,
-mkw1, id10,id11,id12,....,
-mkw2, id20,id21,id22,....,
+mkw0, id00,id01,id02,...,id0m,
+mkw1, id10,id11,id12,...,id1m,
+mkw2, id20,id21,id22,...,id2m,
+.
+.
+.
 ```
 
+(The rows are not necessarily of the same length!)
 
 All kw and id values are 4 byte hex values (this can be changed if required). Please keep in mind where `.dat` and `.csv` extensions are used while modifying the source files. Otherwise, the files will not be read.
 
