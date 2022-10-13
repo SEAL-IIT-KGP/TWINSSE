@@ -58,13 +58,13 @@ The TWINSSE framework requires heavy CPU-intensive computation and is intended f
 - Minimum system load; if possible, no GUI and no other CPU/disk access-intensive task running concurrently
 
 
-Please ensure the number of threads is properly set according to the number of available threads. Otherwise, there might be errors while running the executable(s). Also, double check the values of the associated parameters (many of which in turn depend on the number of threds, please see below).
+Please ensure the number of threads is properly set in the configuration according to the number of available threads. Otherwise, there might be errors while running the executable(s). Also, double check the values of the associated parameters (many of which in turn depend on the number of threds, please see below).
 
 ---
 
 ## Dependencies <a name="dependencies"></a>
 
-The following packages must be installed with global linkage
+The following packages (development versions) must be installed with global linkage
 
 - POSIX pthread
 
@@ -84,7 +84,7 @@ The following packages must be installed with global linkage
 
 [redis++] Install from https://github.com/sewenew/redis-plus-plus
 
-[Blake3] Supplied with the source code, execute `make lib` inside **blake** subdirectory
+[Blake3] Supplied with the source code, execute `make lib` inside **blake** subdirectory with a subproject directory
 
 [CryptoPP] `libcrypto++-dev` v5.6.4, `libcrypto++-utils` v5.6.4, `libcrypto++6` v5.6.4
 
@@ -97,25 +97,25 @@ sudo apt update
 cat requirements.system | xargs sudo apt -y install
 ```
 
-**Please note that __redis++__ has to be installed manually after obtaining the source files from Github [here](https://github.com/sewenew/redis-plus-plus). This process requires sudo access, which is a key reason to segregate __redis++__ installation from the above dependency configuration process. We are working on automating the __redis++__ installation process (combining with the dependency installation process).**
+**Please note that __redis++__ has to be installed manually after obtaining the source files from Github [here](https://github.com/sewenew/redis-plus-plus). This process requires _sudo_ access, which is a key reason to segregate __redis++__ installation from the above dependency configuration process. We are working on automating the __redis++__ installation process (combining with the dependency installation process) in a safe way.**
 
 ---
 
 ## Database Format <a name="dbformat"></a>
 
-The parsed databases are stored in csv format (with `.dat` extension) in the following way.
+The parsed databases are stored in csv format (with `.dat` extension) in the following way (similar to a csv file, with each line ending with a comma).
 ```csv
-kw0, id00,id01,id02,....
-kw1, id10,id11,id12,....
-kw2, id20,id21,id22,....
+kw0, id00,id01,id02,....,
+kw1, id10,id11,id12,....,
+kw2, id20,id21,id22,....,
 ```
 
 This is applicable to meta-keyword databases too.
 
 ```csv
-mkw0, id00,id01,id02,....
-mkw1, id10,id11,id12,....
-mkw2, id20,id21,id22,....
+mkw0, id00,id01,id02,....,
+mkw1, id10,id11,id12,....,
+mkw2, id20,id21,id22,....,
 ```
 
 
@@ -125,19 +125,19 @@ All kw and id values are 4 byte hex values (this can be changed if required). Pl
 
 ## Primary Makefile <a name="primake"></a>
 
-The top-level Makefile contains the rules to build each component of the framework. The built executables need to be run manually. The Makefile contains the following rules.
+The following Makefile rules build and clean the suprojects and necessary libraries of this project. The compiled executables in each project subdirectories need to executed manually.
 
 - __all__  - Builds conjunctive, disjunctive, dnf, cnf and precision executables
 
 - __clean__ - Cleans conjunctive, disjunctive, dnf, cnf and precision executables
 
-- __clean_all__ - Cleans conjunctive, disjunctive, dnf, cnf and precision executables including generated database files and Redis database
+- __clean_all__ - Cleans conjunctive, disjunctive, dnf, cnf and precision executables including generated database files and the Redis database
 
 - __blake_lib__ - Builds blake3 lib for conjunctive, disjunctive, dnf, and cnf subprojects
 
 ---
 
-Each experiment has its own Makefile or helper scripts and separate README files. Please browse through the README files for more details.
+Each subproject has its own Makefile or helper scripts and separate README files. Please browse through the README files for more details.
 
 - Databases [README](./databases/README.md)
 - Configuration [README](./configuration/README.md)
@@ -155,21 +155,21 @@ Each experiment has its own Makefile or helper scripts and separate README files
 ## Steps to Run Experiments <a name="runexp"></a>
 
 Compile Blake3 library
-```C++
+```bash
 make blake_lib
 ```
 
-Set parameters for each experiment as listed above. Go to each specific directory for instructions in README files.
+Set parameters for each subproject by navigating to each subproject directory and go through the instructions in README files.
 
-Generate the meta-keywords databases in project *subdirectories* (not from the top-level TWINSSE directory) by executing the following command in the `database` subdirectory (not the top-level [`databases`](./databases/) directory) for with the project directory (does not apply to conjunctive and DNF).
+Generate the meta-keywords databases in project *subdirectories* (not from the top-level TWINSSE directory) by executing the following command in the `database` subdirectory (not the top-level [`databases`](./databases/) directory) for with the project directory (_does not apply to conjunctive and DNF_).
 
 ```C++
 make all //within database subdirectory
 ```
 
-Set the meta-keyword database parameters in the source files of the respective projects (see associated README files). This does not apply to conjunctive and DNF experiments.
+Set the plain and meta-keyword database parameters in the [configuration file](./configuration/) for the database in use (see associated README files).
 
-If needed, generate the test vectors for particular experiments (a set of test vectors are already supplied inside the repository).
+If needed, generate the test vectors for particular experiments (a set of test vectors are already supplied inside the repository and respective project subdirectories). Instructions and Makefiles to generate test vectors are present in the project subdirectory and _database_ directory of each project subdirectory.
 
 Double-check all parameters and file paths. Ensure all necessary databases (including test vectors) are generated/available.
 
@@ -179,7 +179,7 @@ Clean the projects by executing the following command in the TWINSSE directory. 
 make clean_all
 ```
 
-The use can manually flush the Redis server (storing the database) using the following sequence of commands (includes commands to execute in the Redis CLI).
+The user can manually flush the Redis server using the following sequence of commands (includes commands to execute in the Redis CLI).
 
 ```bash
 $ redis-cli
@@ -194,7 +194,7 @@ $ redis-cli flushall
 $ redis-cli save
 ```
 
-Build all executables in all project subdirectories (conjunctive, disjunctive, CNF and DNF).
+Build all executables in all project subdirectories (precision, conjunctive, disjunctive, CNF and DNF).
 
 ```bash
 make all
@@ -222,19 +222,23 @@ The codebase has absolutely no error handling, does not follow specific producti
 
 Points related to specific experiments.
 
-- In conjunctive and DNF (or CNF) experiments, the result size might be zero (or empty) for a high percentage of the queries. This is due to the sparse nature of the database, where a very large number of keywords have very low frequency, resulting in zero intersection. This is a correct search result with no id in the final result set.
+- In conjunctive and DNF (or CNF) experiments, the result size might be zero (or empty) for a high percentage of the queries. This is due to the sparse nature of the database, where a very large number of keywords have very low frequency, resulting in zero intersection. The executable output is a correct search result with no id in the final result set.
 
 - The search time can widely vary depending upon the system configuration, parameters and load.
 
-- If program is abruptly terminated, check file paths and parameter values are properly set.
+- If an executable is abruptly terminated, check file paths and parameter values are properly set. Especially, if there is any segmentation fault or similar errors due to invalid memory accesses.
 
-- If program is abruptly terminated, try to execute the program with logging the output to a log file in the following way.
+- If an executable is prematurely completed, check the specified file paths specifically. Probably the files are not read properly and the executable is completeing early due to lack of data.
+
+- If an executable is abruptly terminated, try to execute the program with logging the output to a log file in the following way.
 
 ```bash
 ./sse_setup > log.txt
 ```
 
-Not sure why this is happening, but this temporary fix works. We are working on fixing it.
+Not sure yet why this is happening, but this temporary fix works. We are working on resolving it.
+
+- Ensure that you have sufficient number of cores as specified in the configuration file(s). Otherwise, you may receive pthread erros and the the program may terminate abruptly.
 
 ---
 
@@ -242,7 +246,7 @@ Not sure why this is happening, but this temporary fix works. We are working on 
 
 OXT SSE Algorithm
 
-```
+```bib
 Cash, David, et al. "Highly-scalable searchable symmetric encryption with support for boolean queries." Annual cryptology conference. Springer, Berlin, Heidelberg, 2013.
 ```
 
