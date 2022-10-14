@@ -42,6 +42,8 @@ Change `<number_of_bits_required_to_address_the_Bloom_filter>` to specify the ad
 ---
 ### For generating metakeyword database **./database/util.h**
 
+This part is not fully automated yet. Thus, if required, change the following paramters.
+
 Change the follwing lines in [util.h](./database/utils.h) for a choice of plain database (note that, not the meta-databse information).
 
 ```C++
@@ -52,7 +54,7 @@ Change the follwing lines in [util.h](./database/utils.h) for a choice of plain 
 This necessary to complete prior to build the `gen_db` executable for generating the meta-keyword database.
 
 ---
-### Specific changes in **sse_search.cpp**
+### Specific parameters in **sse_search.cpp**
 
 Remember, the test vector files will change for different databases. This part is not automated yet.
 

@@ -11,7 +11,7 @@ The main code has two top-level files - [`sse_setup.cpp`](./sse_setup.cpp) and [
 
 ## Parameter Setting in Source Files
 
-Please esure that the following paratemeters are set properly before builind `sse_setup` and `sse_search`.
+Please esure that the following paratemeters are set properly before building `sse_setup` and `sse_search`.
 
 Set the following parameters in the database configuration file [here](../configuration/). A configuration file is already present for the supplied database.
 
@@ -38,7 +38,9 @@ Change `<Bloom_filter_size_as_a_power_of_2_value>` to the power of two just abov
 Set `<number_of_bits_required_to_address_the_Bloom_filter>` to the number of bits to specify the range of address of the Bloom filter. The number of bits to consider is derived from the above `<Bloom_filter_size_as_a_power_of_2_value>` value. Here `<Bloom_filter_size_as_a_power_of_2_value>` is $2^{17}$, that requires 17 bits. Hence, 17 bits are extracted from hash digest value to compute an index.
 
 ---
-### Specific changes to **sse_search.cpp**
+### Specific parameters in **sse_search.cpp**
+
+This part is not fully automated yet. Thus, if required, change the following paramters.
 
 ```C++
 std::string kw_freq_file = "db_kw_freq.csv";

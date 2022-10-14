@@ -13,8 +13,6 @@ Please esure that the following paratemeters are set properly before builiding`s
 
 ## Parameter Setting in Configuration File and Source Files
 
-Ensure the following paremeters in specific files have appropriate values.
-
 Ensure the following parameters are set properly in the configuration file [here](../configuration/).
 
 ```conf
@@ -24,6 +22,9 @@ Ensure the following parameters are set properly in the configuration file [here
 <number_of_maximum_document_identifiers_for_a_keyword>
 <Bloom_filter_size_as_a_power_of_2_value>
 <number_of_bits_required_to_address_the_Bloom_filter>
+.
+.
+.
 ```
 
 (First six lines.)
@@ -41,7 +42,9 @@ Change `<Bloom_filter_size_as_a_power_of_2_value>` to the power of two just abov
 Change `<number_of_bits_required_to_address_the_Bloom_filter>` to specify the address range of the Bloom filter. The number of bits to consider is derived from the above `<Bloom_filter_size_as_a_power_of_2_value>` value. Here `<Bloom_filter_size_as_a_power_of_2_value>` is $2^{17}$, that requires 17 bits.
 
 ---
-Specific changes in **sse_search.cpp**
+### Specific parameters in **sse_search.cpp**
+
+This part is not fully automated yet. Thus, if required, change the following paramters.
 
 ```C++
 std::string kw_freq_file = "db_kw_freq.csv";
