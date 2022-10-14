@@ -1,6 +1,6 @@
 # TWINSSE
 
-This reposiroty contains the source codes for the expreiments presented in the paper "__TWo-IN-one-SSE: Fast, Scalable and Storage-Efficient Searchable Symmetric Encryption for Conjunctive and Disjunctive Boolean Queries__" (PETS 2023, Issue 1).
+This repository contains the source codes of the experiments presented in the paper "__TWo-IN-one-SSE: Fast, Scalable and Storage-Efficient Searchable Symmetric Encryption for Conjunctive and Disjunctive Boolean Queries__" (PETS 2023, Issue 1).
 
 ---
 
@@ -18,7 +18,7 @@ This reposiroty contains the source codes for the expreiments presented in the p
 
 ## Repository Organisation <a name="repoorg"></a>
 
-The repository is organised according to the TWINSSE experiments presented in the paper's main body covering experiments on different types of queries, storage and precision evaluation. The following directory tree shows the repository structure with subdirectories for individual experiments.
+The repository is organised according to the TWINSSE experiments presented in the paper's main body covering experiments on different types of queries, storage and precision evaluation. The following directory tree shows the repository structure with subdirectories of individual experiments.
 
 ```
 TWINSSE
@@ -41,11 +41,11 @@ TWINSSE
 
 ## System Requirements <a name="sysreq"></a>
 
-The TWINSSE framework requires heavy CPU-intensive computation and is intended for large multi-core server systems with minimal additional workload. We recommend the following system specifications.
+The TWINSSE framework requires heavy CPU-intensive computation and is intended for large multi-core server systems with the minimal additional workload. We recommend the following system specifications.
 
 - Intel(R) Xeon v5 or higher server grade (Xeon Gold or higher) multi-core 64-bit CPUs
 
-- At least 24-48 physical CPU cores (with dual thread) with base frequency higher than 2 GHz. The codebase should work with lower number of cores (8-16 physical cores), but the performance is expected to be degraded.
+- At least 24-48 physical CPU cores (with dual thread) with base frequency higher than 2 GHz. The codebase should work with lower number of cores (8-16 physical cores), but the performance is likely to be degraded.
 
 - 64-128 GB RAM or higher
 
@@ -58,7 +58,7 @@ The TWINSSE framework requires heavy CPU-intensive computation and is intended f
 - Minimum system load; if possible, no GUI and no other CPU/disk access-intensive task running concurrently
 
 
-Please ensure the number of threads is properly set in the configuration according to the number of available threads. Otherwise, there might be errors while running the executable(s). Also, double check the values of the associated parameters (many of which in turn depend on the number of threds, please see below).
+Please ensure the number of threads is appropriately set in the configuration file according to the number of available threads. Otherwise, there might be errors while running the executable(s). Also, double-check the values of associated parameters (many of which, in turn, depend on the number of threads, please see below).
 
 ---
 
@@ -90,14 +90,14 @@ The following packages (development versions) must be installed with global link
 
 ---
 
-All dependencies (except __redis++__ and __Blake3__) can be installed by executing the following command in the TWINSSE home directory. Note that, it _requires sudo access_.
+All dependencies (except __redis++__ and __Blake3__) can be installed by issuing the following command in the TWINSSE home directory. Note that it _requires sudo access_.
 
 ```bash
 sudo apt update
 cat requirements.system | xargs sudo apt -y install
 ```
 
-The above dependecies need to be installed before building and installing __redis++__.
+The above dependencies must be installed before building and installing __redis++__.
 
 **Please note that __redis++__ has to be installed manually after obtaining the source files from Github [here](https://github.com/sewenew/redis-plus-plus). This process requires _sudo_ access, which is a key reason to segregate __redis++__ installation from the above dependency configuration process. We are working on automating the __redis++__ installation process (combining with the dependency installation process) in a safe way.**
 
@@ -115,7 +115,7 @@ kw2, id20,id21,id22,...,id2n,
 .
 ```
 
-This is applicable to generated meta-keyword databases too.
+This applies to the generated meta-keyword databases too.
 
 ```csv
 mkw0, id00,id01,id02,...,id0m,
@@ -126,15 +126,15 @@ mkw2, id20,id21,id22,...,id2m,
 .
 ```
 
-(The rows are not necessarily of the same length!)
+(All rows are not necessarily of the same length!)
 
-All kw and id values are 4 byte hex values (this can be changed if required). Please keep in mind where `.dat` and `.csv` extensions are used while modifying the source files. Otherwise, the files will not be read.
+All kw and id values are 4 byte hex values (this can be changed if required) obtained from the hash digest of actual keyword and id strings. This is a representation we chose specifically for experimental purposes. Please keep in mind where `.dat` and `.csv` extensions are used while modifying the source files. Otherwise, the files will not be read, and the program will terminate early.
 
 ---
 
 ## Primary Makefile <a name="primake"></a>
 
-The following Makefile rules build and clean the suprojects and necessary libraries of this project. The compiled executables in each project subdirectories need to executed manually.
+The following Makefile rules build and clean the suprojects and compile necessary libraries for the subprojects. The compiled executables in each project subdirectory need to executed manually from respective project subdirectory.
 
 - __all__  - Builds conjunctive, disjunctive, dnf, cnf and precision executables
 
@@ -146,7 +146,7 @@ The following Makefile rules build and clean the suprojects and necessary librar
 
 ---
 
-Each subproject has its own Makefile or helper scripts and separate README files. Please browse through the README files for more details.
+Each subproject has its own Makefile or helper scripts and separate README file. Please browse through the follwoing README files of the subprojects for more details.
 
 - Databases [README](./databases/README.md)
 - Configuration [README](./configuration/README.md)
@@ -163,26 +163,28 @@ Each subproject has its own Makefile or helper scripts and separate README files
 
 ## Steps to Run Experiments <a name="runexp"></a>
 
-Compile Blake3 library
+_All commands below should be issued from TWINSSE home directory unless otherwise specified explicitly._
+
+After installing all dependencies and setting up Redis++, the Blake3 library should be compiled (required by the experiments). To compile Blake3 library, invoke the following Makefile rule (this is pertaing to the primary Makefile in the TWINSSE home directory).
 ```bash
 make blake_lib
 ```
 
-Set parameters for each subproject by navigating to each subproject directory and go through the instructions in README files.
+Set the parameters for experiments in the configuration file to be used located in the [configuration](./configuration/) subdirectory. A configuration file for the database in the [databases](./databases/) subdirectory is already supplied with the codebase.
 
-Generate the meta-keywords databases in project *subdirectories* (not from the top-level TWINSSE directory) by executing the following command in the `database` subdirectory (not the top-level [`databases`](./databases/) directory) for with the project directory (_does not apply to conjunctive and DNF_).
+Set the parameters for subproject by navigating to each subproject directory and go through the instructions in README files. Generate the meta-keywords databases in project *subdirectories* (not from the top-level TWINSSE directory) by executing the following command in the `database` subdirectory (not the top-level [`databases`](./databases/) directory) for with the project directory (_does not apply to conjunctive and DNF_). 
 
 ```C++
 make all //within database subdirectory
 ```
 
-Set the plain and meta-keyword database parameters in the [configuration file](./configuration/) for the database in use (see associated README files).
+Set and double check the plain and meta-keyword database parameters in the [configuration file](./configuration/) for the database in use (see associated README files).
 
-If needed, generate the test vectors for particular experiments (a set of test vectors are already supplied inside the repository and respective project subdirectories). Instructions and Makefiles to generate test vectors are present in the project subdirectory and _database_ directory of each project subdirectory.
+If needed, generate the test vectors for particular experiments (a set of test vectors are already supplied inside the repository and respective project subdirectories). Instructions and Makefiles to generate test vectors are present in the project subdirectory and _database_ directory within each project subdirectory.
 
 Double-check all parameters and file paths. Ensure all necessary databases (including test vectors) are generated/available.
 
-Clean the projects by executing the following command in the TWINSSE directory. This clears the generated databases (including the temporary ones) and clears the Redis database too.
+Clean the projects by executing the following command in the TWINSSE directory. This clears the generated databases (including the temporary ones) and clears the Redis database too. This does not clear the result files generated in the experiments.
 
 ```bash
 make clean_all
@@ -245,9 +247,9 @@ Points related to specific experiments.
 ./sse_setup > log.txt
 ```
 
-Not sure yet why this is happening, but this temporary fix works. We are working on resolving it.
+Not sure yet why this happens, but this temporary fix seem to work. We are working on resolving it.
 
-- Ensure that you have sufficient number of cores as specified in the configuration file(s). Otherwise, you may receive pthread erros and the the program may terminate abruptly.
+- Ensure that you have sufficient number of cores as specified in the configuration file(s). Otherwise, you may receive pthread erros and the program may abruptly terminate.
 
 ---
 
