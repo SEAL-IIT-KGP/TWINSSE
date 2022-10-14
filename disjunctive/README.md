@@ -1,19 +1,19 @@
 # Disjunctive Search
 ## Overview
 
-This subdirectory contains the codes to search disjunctive queries of the form
+This subdirectory contains the codes for processing plain disjunctive queries of the form
 
-$q = w_1\lor w_2$
+$q = w_1\lor w_2$.
 
-The main code basically has two top-level files - `sse_setup.cpp` and `sse_search.cpp` responsible for exectuing the setup and search routines respectively. The `Makefile` for this codebase has the following main routines `sse_setup` and `sse_search` that generates two executables `sse_setup` and `sse_search` that exectues the setup and search routine. Additionally, there is a `db_util.py` utility script that displays necessary database information.
-
-Please esure that the following paratemeters are set properly before building `sse_setup` and `sse_search`.
+The main code essentially has two top-level files - `sse_setup.cpp` and `sse_search.cpp` responsible for exectuing the setup and search routines respectively. The `Makefile` for this codebase has the following main routines - `sse_setup` and `sse_search` that generate two executables `sse_setup` and `sse_search`, which exectue the SSE setup and search routines, respectively. Additionally, there is a `db_util.py` utility script that displays necessary database information (useful for setting/checking parameters).
 
 ---
 
 ## Parameter Setting in Configuration and Source Files
 
-Set the following parameters are set in the configuration file [here](../configuration/).
+Please esure that the following paratemeters are set properly before building `sse_setup` and `sse_search`.
+
+Set the following parameters in the configuration file [here](../configuration/). One confiuration file is already present for the supplied database.
 
 ```conf
 .
@@ -54,7 +54,7 @@ This necessary to complete prior to build the `gen_db` executable for generating
 ---
 ### Specific changes in **sse_search.cpp**
 
-Remember, the test vector files will change for different database. This part is not automated yet.
+Remember, the test vector files will change for different databases. This part is not automated yet.
 
 ```C++
 std::string res_query_file = "./results/res_query.csv";
@@ -95,7 +95,7 @@ $ rm -rf eidxdb.csv
 $ rm -rf bloom_filter.dat
 ```
 
-You can also run `make clean_all` to delete the `eidxdb.csv` and `bloom_filter.dat` files. This does not remove results files; however, the result files are overwritten for each exeperiment execution.
+Alternatively, run `make clean_all` to delete the `eidxdb.csv` and `bloom_filter.dat` files. This does not remove the result files; however, the result files are overwritten for each exeperiment execution.
 
 ### Set the Parameters
 
@@ -103,7 +103,7 @@ Obtain the database parameters from `db_util.py` output and the source file para
 
 ### Build the Executables
 
-Before doing this ensure that all parameters have been set properly and the paths are correct.
+Before building the executables ensure that all parameters have been set properly and the paths are correct.
 
 Execute the following make command to generate `sse_setup` and `sse_search`.
 
@@ -111,7 +111,7 @@ Execute the following make command to generate `sse_setup` and `sse_search`.
 make all
 ```
 
-Both `sse_setup` and `sse_search` can be generate through individual Makefile rules
+Both `sse_setup` and `sse_search` can be generated through individual Makefile rules
 
 ```bash
 make sse_setup

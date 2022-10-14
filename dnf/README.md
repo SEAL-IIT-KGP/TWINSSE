@@ -5,74 +5,40 @@ This subdirectory contains the codes to evaluate DNF expressions of the form
 
 $q = (w_1\land w_2)\lor(w_3\land w_4)$.
 
-The main code basically has two top-level files - [`sse_setup.cpp`](./sse_setup.cpp) and [`sse_search.cpp`](./sse_search.cpp) responsible for exectuing the setup and search routines respectively. The [`Makefile`](./Makefile) for this codebase has the following main routines `sse_setup` and `sse_search` that generates two executables `sse_setup` and `sse_search` that exectues the setup and search routine. Additionally, there is a [`db_util.py`](./db_util.py) utility script the generates the keyword-frequency record necessary for query processng.
-
-Please esure that the following paratemeters are set properly before builind `sse_setup` and `sse_search`.
+The main code has two top-level files - [`sse_setup.cpp`](./sse_setup.cpp) and [`sse_search.cpp`](./sse_search.cpp) responsible for exectuing the SSE setup and search routines, respectively. The [`Makefile`](./Makefile) for this codebase has the routines - `sse_setup` and `sse_search` that generate two executables `sse_setup` and `sse_search`,which execute the SSE setup and search routines, respectively. Additionally, there is a [`db_util.py`](./db_util.py) utility script the generates the keyword-frequency record necessary for query processng (useful for setting/verifying database parameters).
 
 ---
 
 ## Parameter Setting in Source Files
 
-Ensure the following paremeters in specific files have appropriate values.
+Please esure that the following paratemeters are set properly before builind `sse_setup` and `sse_search`.
+
+Set the following parameters in the database configuration file [here](../configuration/). A configuration file is already present for the supplied database.
+
+```conf
+<plain_database_file_path>
+<number_of_threads_to_use_with_plain_database>
+<number_of_keywords_in_the_plain_database>
+<number_of_maximum_document_identifiers_for_a_keyword>
+<Bloom_filter_size_as_a_power_of_2_value>
+<number_of_bits_required_to_address_the_Bloom_filter>
+.
+.
+.
+```
+
+Set `<plain_database_file_path>` to the actual database files path. See the main README.md in the upper directory for available databases and their details. Addtional files are avaialble in the Google Drive directory.
+
+Set `<number_of_threads_to_use_with_plain_database>` to the number of threads to use. Since Bloom Filter hashes are individually computed using separate threads, we recommend a minimum 24 threads to use. Please note that the number of hash functions used for Bloom filter indexing is same as the number of threads used. In the current codebase this is set automatically.
+
+Set the values of `<number_of_keywords_in_the_plain_database>` the total number of keywords in the plain database. `<number_of_maximum_document_identifiers_for_a_keyword>` is the number of maximum ids where a keyword appears (or the maximum keyword frequency). This is used to reserve buffer; need not be the exact, but should be larger than then the actual max frequency.
+
+Change `<Bloom_filter_size_as_a_power_of_2_value>` to the power of two just above the total number of unqiue meta-keyword-document-id pairs in the meta-database. For example, if there are 80901 unique meta-keyword-id pairs in the database, the power of two just above 80901 is 131072 = $2^{17}$. Hence, set this to 131072. This is used to calculate total Bloom filter size.
+
+Set `<number_of_bits_required_to_address_the_Bloom_filter>` to the number of bits to specify the range of address of the Bloom filter. The number of bits to consider is derived from the above `<Bloom_filter_size_as_a_power_of_2_value>` value. Here `<Bloom_filter_size_as_a_power_of_2_value>` is $2^{17}$, that requires 17 bits. Hence, 17 bits are extracted from hash digest value to compute an index.
 
 ---
-
-**size_parameters.h**
-
-Change `N_HASH` to the number of hash functions to be used for Bloom filter. Currently we set this to the number of threads used.
-
-```C++
-#define N_HASH 24 //Set this to the number of threads
-```
-
-Change `MAX_BF_BIN_SIZE` to the power of two just above the total number of unqiue meta-keyword-document-id pairs in the meta-database. For example, if there are 80901 unique meta-keyword-id pairs in the database, the power of two just above 80901 is 131072 = $2^{17}$. Hence, set this to 131072. This is used to calculate total Bloom filter size.
-
-```C++
-#define MAX_BF_BIN_SIZE 131072 // 2**17 just above total #kw-id pairs
-```
-
----
-
-**mainwindow.cpp**
-
-Change this line in `EDB_Setup()` function to generate an address spanning the Bloom filter. The number of bits to consider is derived from the above `MAX_BF_BIN_SIZE` value. Here `MAX_BF_BIN_SIZE` is $2^{17}$, that requires 17 bits. Hence, 17 bits are extracted from `bash` value to compute an index (element of `bf_indices`).
-
-```C++
-bf_indices[j] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0xFF) << 8) + ((bhash[64*j+2] & 0x01) << 16);
-```
-
-The same modification has to be done in function `EDB_Search()`.
-```C++
-bf_n_indices[j][i] = (bhash[64*j] & 0xFF) + ((bhash[64*j+1] & 0xFF) << 8) + ((bhash[64*j+2] & 0x01) << 16);
-```
-
----
-
-Change the following lines in both __sse_setup.cpp__ and __sse_search.cpp__.
-
-```C++
-int N_keywords = 6043;//Number of keywords **NOT META-KEYWORDS**
-int N_max_ids = 1809;//Number of maximum ids for a keyword (or max frequency)
-```
-
-`N_keywords` is the total number of keywords in the plain database. `N_max_ids` is the number of maximum ids where a keyword appears (or the maximum keyword frequency). This is used to reserve buffer; need not be the exact, but should be larger than then the actual max frequency.
-
-```C++
-string widxdb_file = "../databases/db6k.dat";//path to plain database
-```
-
-Set `widxdb_file` to the actual database files path. See the main README.md in the upper directory for available databases and their details. Addtional files are avaialble in the Google Drive directory.
-
-```C++
-unsigned int N_threads = 24;
-```
-
-Set `N_threads` to the number of threads to use. Since Bloom Filter hashes are individually computed using separate threads, we recommend a minimum 24 threads to use.
-
-__Remember, you have to make these changes in both files for each database separately.__
-
----
-**sse_search.cpp**
+### Specific changes to **sse_search.cpp**
 
 ```C++
 std::string kw_freq_file = "db_kw_freq.csv";
@@ -114,7 +80,7 @@ $ rm -rf eidxdb.csv
 $ rm -rf bloom_filter.dat
 ```
 
-You can also run `make clean_all` to delete the `eidxdb.csv` and `bloom_filter.dat` files. This does not clear Redis though.
+You can also run `make clean_all` to delete the `eidxdb.csv` and `bloom_filter.dat` files along with the Redis database. This does not remove the result files.
 
 ### Set the Parameters
 
@@ -148,7 +114,7 @@ The following command deletes the executable files. Generated databases includin
 make clean 
 ```
 
-The following command deletes the generated databases too (`eidxdb.csv` and `bloom_filter.dat`, Redis data and generated results files are not removed).
+The following command deletes the generated databases too (`eidxdb.csv`, `bloom_filter.dat` and Redis database). The generated result files are not removed).
 
 ```bash
 make clean_all
