@@ -18,7 +18,7 @@ This file contains the parameter configuration file details that is read and use
 <number_of_bits_required_to_address_the_Bloom_filter_for_the_meta-database>
 ```
 
-The configuration file for the database [supplied](../databases/) as provided in this directory is shown here.
+The configuration file in this directory for the database [supplied](../databases/) is shown here.
 
 ```conf
 ../databases/db6k.dat
