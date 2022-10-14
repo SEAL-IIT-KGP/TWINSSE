@@ -12,7 +12,7 @@ This file contains the parameter configuration file details that is read and use
 <number_of_bits_required_to_address_the_Bloom_filter>
 <meta_database_file_path>
 <number_of_threads_to_use_with_meta_database>
-<number_of_keywords_in_the_meta_database>
+<number_of_metakeywords_in_the_meta_database>
 <number_of_maximum_document_identifiers_for_a_metakeyword>
 <Bloom_filter_size_as_a_power_of_2_value_for_the_meta-database>
 <number_of_bits_required_to_address_the_Bloom_filter_for_the_meta-database>
