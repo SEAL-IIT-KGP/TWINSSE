@@ -396,7 +396,7 @@ int main()
                         cout << "1 Querying: ";
 
                         for(auto v:mkws){
-                            cout << v << ", ";
+                            cout << v.substr(0,8) << ", ";
                         }
                         cout << endl;
                         
@@ -436,7 +436,7 @@ int main()
 
                         cout << "2 Querying: ";
                         for(auto v:mkws){
-                            cout << v << ", ";
+                            cout << v.substr(0,8) << ", ";
                         }
                         cout << endl;
                         
@@ -463,7 +463,7 @@ int main()
                     }
                     else{//This is when only the last mkw is from a different bin
                         cout << "3 Querying: ";
-                        cout << row_tv_data.at(j) << endl;
+                        cout << row_tv_data.at(j).substr(0,8) << endl;
 
                         for(auto rs:mkws){
                             StrToHexBVec(row_vec+(16*n_vec),rs.data());

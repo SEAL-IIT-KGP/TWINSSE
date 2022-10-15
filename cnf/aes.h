@@ -103,5 +103,6 @@ static void aes128_dec(__m128i *key_schedule, uint8_t *cipherText,uint8_t *plain
 int AESENC(uint8_t *ctext,uint8_t *ptext,uint8_t *key);
 int AESDEC(uint8_t *ptext,uint8_t *ctext,uint8_t *key);
 int PRF_K(uint8_t *prf_out,uint8_t *ptext);
+int PRF(uint8_t *ctext,uint8_t *ptext,uint8_t *key);
 
 #endif // AES_H

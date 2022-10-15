@@ -153,6 +153,7 @@ int EDB_SetUp();
 int EDB_Search(unsigned char *query_str, int NWords);
 
 int FPGA_AES_ENC(unsigned char *ptext,unsigned char *key, unsigned char *ctext);
+int FPGA_PRF(unsigned char *ptext,unsigned char *key, unsigned char *ctext);
 
 int FPGA_HASH(unsigned char *msg, unsigned char *digest);
 int FPGA_BLOOM_HASH(unsigned char *msg, unsigned char *digest);

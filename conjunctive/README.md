@@ -5,15 +5,15 @@ This subdirectory contains the codes to evaluate conjunctive expressions of the 
 
 $q = w_1\land w_2\land\ldots\land w_n$
 
-The main codebase has two top-level files - [`sse_setup.cpp`](./sse_setup.cpp) and [`sse_search.cpp`](./sse_search.cpp) responsible for exectuing the setup and search routines respectively. The [`Makefile`](./Makefile) for this codebase has the following main routines `sse_setup` and `sse_search` that generate two executables `sse_setup` and `sse_search` used to execute the setup and search routines. Additionally, there is a [`db_util.py`](./db_util.py) utility script the generates the keyword-frequency records/information necessary for query processng.
+The main codebase has two top-level files - [`sse_setup.cpp`](./sse_setup.cpp) and [`sse_search.cpp`](./sse_search.cpp) responsible for executing the setup and search routines respectively. The [`Makefile`](./Makefile) for this codebase has the following main routines, `sse_setup` and `sse_search`, that generate two executables, `sse_setup` and `sse_search` used to execute the setup and search routines. Additionally, there is a [`db_util.py`](./db_util.py) utility script that generates the keyword-frequency records/information necessary for query processing.
 
-Please esure that the following paratemeters are set properly before builiding`sse_setup` and `sse_search`.
+Please ensure that the following parameters are correctly set before builiding`sse_setup` and `sse_search`.
 
 ---
 
 ## Parameter Setting in Configuration File and Source Files
 
-Ensure the following parameters are set properly in the configuration file [here](../configuration/).
+Ensure the following parameters are correctly set in the configuration file [here](../configuration/).
 
 ```conf
 <plain_database_file_path>
@@ -31,20 +31,20 @@ Ensure the following parameters are set properly in the configuration file [here
 
 Set `<plain_database_file_path>` to the plain database file path (in top-level [databases](../databases/) directory).
 
-Set `<number_of_keywords_in_the_plain_database>` to number of unique keywords in the plain database and set `number_of_maximum_document_identifiers_for_a_keyword` to the number of maximum ids for a keyword in the plain database. `number_of_keywords_in_the_plain_database` is the total number of keywords in the plain database. `number_of_maximum_document_identifiers_for_a_keyword` is the number of maximum ids where a keyword appears (or the maximum keyword frequency).
+Set `<number_of_keywords_in_the_plain_database>` to the number of unique keywords in the plain database and set `number_of_maximum_document_identifiers_for_a_keyword` to the number of maximum ids for a keyword in the plain database. `number_of_keywords_in_the_plain_database` is the total number of keywords in the plain database. `number_of_maximum_document_identifiers_for_a_keyword` is the number of maximum ids where a keyword appears (or the maximum keyword frequency).
 
 Set `number_of_threads_to_use_with_plain_database` to the number of threads to use. Since Bloom Filter hashes are individually computed using separate threads, we recommend a minimum 24 threads to use.
 
-Change `<number_of_threads_to_use_with_plain_database>` to the number of hash functions to be used for Bloom filter indexing. Currently this is automatically set to the number of threads used.
+Change `<number_of_threads_to_use_with_plain_database>` to the number of hash functions to be used for Bloom filter indexing. Currently, this is automatically set to the number of threads used.
 
-Change `<Bloom_filter_size_as_a_power_of_2_value>` to the power of two just above the total number of unqiue meta-keyword-document-id pairs in the meta-database. For example, if there are 80901 unique meta-keyword-id pairs in the database, the power of two just above 80901 is 131072 = $2^{17}$. Hence, set this to 131072. This is used to compute total Bloom filter size.
+Change `<Bloom_filter_size_as_a_power_of_2_value>` to the power of two just above the total number of unique meta-keyword-document-id pairs in the meta-database. For example, if there are 80901 unique meta-keyword-id pairs in the database, the power of two just above 80901 is 131072 = $2^{17}$. Hence, set this to 131072. This is used to compute the total Bloom filter size.
 
 Change `<number_of_bits_required_to_address_the_Bloom_filter>` to specify the address range of the Bloom filter. The number of bits to consider is derived from the above `<Bloom_filter_size_as_a_power_of_2_value>` value. Here `<Bloom_filter_size_as_a_power_of_2_value>` is $2^{17}$, that requires 17 bits.
 
 ---
 ### Specific parameters in **sse_search.cpp**
 
-This part is not fully automated yet. Thus, if required, change the following paramters.
+This part is not fully automated yet. Thus, if required, change the following parameters.
 
 ```C++
 std::string kw_freq_file = "db_kw_freq.csv";
@@ -53,19 +53,19 @@ std::string res_id_file = "./results/res_id.csv";
 std::string res_time_file = "./results/res_time.csv";
 ```
 
-The `kw_freq_file` string holds the path to the keyword-frequency file generated by the [`db_util.py`](./db_util.py) script. The files is stored in the working directory. Other three files stores the actual queries, result ids, and timing information for each queries, respectively. These are overwritten each time the `sse_search` is executed.
+The `kw_freq_file` string holds the path to the keyword-frequency file generated by the [`db_util.py`](./db_util.py) script. The files is stored in the working directory. The other three files store the actual queries, result ids, and timing information for each query, respectively. These are overwritten each time the `sse_search` is executed.
 
 ```C++
 unsigned int n_iterations = 1000;//Number of text vectors to search
 ```
 
-The value of `n_iterations` to the desired number of searches using random test vectors.
+Set the value of `n_iterations` to the desired number of searches using random test vectors.
 
 ```C++
 unsigned int n_q_kw = 2;//Number of keywords in a query to search for
 ```
 
-Change the value of `n_q_kw` to desired number of keywords in the randomly generated queries.
+Set the value of `n_q_kw` to the desired number of keywords in the randomly generated queries.
 
 ---
 
@@ -73,7 +73,7 @@ Change the value of `n_q_kw` to desired number of keywords in the randomly gener
 
 ### First Step
 
-Run [`db_util.py`](./db_util.py) to generate the `db_kw_freq.csv` file and necessary database information including number of keywords, total kw-id pairs etc. You need to change the database name if you want to use a different database and regenerate the above file.
+Run [`db_util.py`](./db_util.py) to generate the `db_kw_freq.csv` file and necessary database information, including the number of keywords, total kw-id pairs etc. Change the database name if a different database is used and regenerate the above file.
 
 ### Clear Redis
 
@@ -88,15 +88,15 @@ $ rm -rf eidxdb.csv
 $ rm -rf bloom_filter.dat
 ```
 
-You can also run `make clean_all` to delete the `eidxdb.csv` and `bloom_filter.dat` files. This does not remove the old result files; however those are overwritten during while running an experiment.
+You can also run `make clean_all` to delete the `eidxdb.csv` and `bloom_filter.dat` files. This does not remove the old result files; however, those are overwritten while running an experiment.
 
 ### Set the Parameters
 
-Obtain the database parameters from [`db_util.py`](./db_util.py) output and the configuration/source file parameters accordingly as stated above.
+Obtain the database parameters from [`db_util.py`](./db_util.py) output and the configuration/source file parameters accordingly, as stated above.
 
 ### Build the Executables
 
-Before doing this ensure that all parameters have been set properly and the paths are correct.
+Before doing this, ensure that all parameters have been set correctly and the paths are correct.
 
 Execute the following make command to generate `sse_setup` and `sse_search`.
 
@@ -104,7 +104,7 @@ Execute the following make command to generate `sse_setup` and `sse_search`.
 make all
 ```
 
-Both `sse_setup` and `sse_search` can be generate through individual Makefile rules
+Both `sse_setup` and `sse_search` can be generated through individual Makefile rules.
 
 ```bash
 make sse_setup
@@ -116,13 +116,13 @@ and
 make sse_search
 ```
 
-The following command deletes the executable files. Generated databases including Redis, Bloom filter and results are not deleted.
+The following command deletes the executable files. Generated databases, including Redis, Bloom filter and results are not deleted.
 
 ```bash
 make clean 
 ```
 
-Where as the following deletes the generated database files (results and Redis data are not deleted).
+Whereas the following deletes the generated database files and Redis databases (result files are not deleted).
 
 ```bash
 make clean_all
@@ -142,14 +142,14 @@ When setup is complete, execute the search,
 ./sse_search
 ```
 
-The test-vectors are automatically generated in this case from `db_kw_freq.csv` file and a randon conjunctive expression of the stated form is generated for searching. The results are stored in [`./results/`](./results/) subdirectory. For sublinearity experiement, appropriate datapoints (specific frequencies for the variable and fixed terms) are extracted from results stored.
+The test vectors are automatically generated in this case from `db_kw_freq.csv` file, and a random conjunctive expression of the stated form is generated for searching. The results are stored in [`./results/`](./results/) subdirectory. For the sublinearity experiment, appropriate data points (specific frequencies for the variable and fixed terms) are extracted from the results stored.
 
 ---
 
 ## Troubleshooting and Remarks
 
-- Double check the system parameters. If even one mismatch is there, the result would be incorrect.
-- Check if the input files are being read correctly (otherwise, the program would terminate abruptly)
-- While executing the `sse_setup`, the Bloom filter is written to disk at the end. This requires a bit of time. Please be patient for this while using large databases.
-- While executing the `sse_search` the Bloom filter is read into memory from disk first. This requires a bit of time. Please be patient for this while using large databases.
+- Double-check the system parameters. If even one mismatch is there, the result would be incorrect.
+- Check if the input files are being read correctly (otherwise, the program will terminate abruptly)
+- While executing the `sse_setup`, the Bloom filter is written to disk at the end. This requires a bit of time. Please be patient with this while using large databases.
+- While executing the `sse_search`, the Bloom filter is read into memory from the disk first. This requires a bit of time. Please be patient with this while using large databases.
 - Timings can widely vary depending upon the system configuration and load (and the version of packages used).

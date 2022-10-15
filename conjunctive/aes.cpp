@@ -25,3 +25,12 @@ int PRF_K(uint8_t *prf_out,uint8_t *ptext){
     aes128_enc(key_schedule,ptext,prf_out);
     return 0;
 }
+
+//For experimental/debugging purpose only
+//In practice, replace with AES-CMAC
+int PRF(uint8_t *ctext,uint8_t *ptext,uint8_t *key){
+    __m128i key_schedule[20];
+    aes128_load_key(key,key_schedule);
+    aes128_enc(key_schedule,ptext,ctext);
+    return 0;
+}

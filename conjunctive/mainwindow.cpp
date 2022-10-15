@@ -205,6 +205,9 @@ int WorkerThread(
             unsigned char *t_res = reinterpret_cast<unsigned char *>(val->data());
             DB_StrToHex49(MGDB_RES,t_res);
         }
+        else if(*OPCODE == 9){
+            PRF(AES_CT,AES_PT,AES_KT);
+        }
         else{
             std::this_thread::sleep_for (std::chrono::milliseconds(1));//Check if it results in computation error
         }
@@ -349,7 +352,8 @@ int EDB_SetUp()
         id_local = ID;
         xid_local = XID;
         for(int nword = 0;nword < N_words;++nword){
-            FPGA_AES_ENC(id_local,KI,xid_local);
+            // FPGA_AES_ENC(id_local,KI,xid_local);
+            FPGA_PRF(id_local,KI,xid_local);
             id_local += sym_block_size;
             xid_local += sym_block_size;
         }
@@ -382,7 +386,8 @@ int EDB_SetUp()
         wc_local = WC;
         zw_local = ZW;
         for(int nword = 0;nword < N_words;++nword){
-            FPGA_AES_ENC(wc_local,KZ,zw_local);
+            // FPGA_AES_ENC(wc_local,KZ,zw_local);
+            FPGA_PRF(wc_local,KZ,zw_local);
             wc_local += sym_block_size;
             zw_local += sym_block_size;
         }
@@ -547,8 +552,10 @@ int EDB_SetUp()
         //Encrypt IDs
         id_local = ID;
         xid_local = XID;
+
         for(int nword = 0;nword < N_words;++nword){
-            FPGA_AES_ENC(id_local,KI,xid_local);
+            // FPGA_AES_ENC(id_local,KI,xid_local);
+            FPGA_PRF(id_local,KI,xid_local);
             id_local += sym_block_size;
             xid_local += sym_block_size;
         }
@@ -757,7 +764,8 @@ int EDB_Search(unsigned char *query_str, int NWords)
     wc_local = WC;
     fw1_local = FW1;
     for(int nword = 0;nword < N_words;++nword){
-        FPGA_AES_ENC(wc_local,KZ,fw1_local);
+        // FPGA_AES_ENC(wc_local,KZ,fw1_local);
+        FPGA_PRF(wc_local,KZ,fw1_local);
         wc_local += sym_block_size;
         fw1_local += sym_block_size;
     }
@@ -767,7 +775,8 @@ int EDB_Search(unsigned char *query_str, int NWords)
     kxwl_local = KXWL;
     fpkxwl_local = FPKXWL;
     for(int nword = 0;nword < N_words;++nword){
-        FPGA_AES_ENC(kxwl_local,KX,fpkxwl_local);
+        // FPGA_AES_ENC(kxwl_local,KX,fpkxwl_local);
+        FPGA_PRF(kxwl_local,KX,fpkxwl_local);
         kxwl_local += sym_block_size;
         fpkxwl_local += sym_block_size;
     }
@@ -1306,6 +1315,33 @@ int FPGA_AES_ENC(unsigned char *ptext,unsigned char *key, unsigned char *ctext)
         ::memcpy(GL_AES_KT,key,16);
 
         *GL_OPCODE = 1;
+
+        nWorkerCount = N_threads;
+        ++nCurrentIteration;
+    }
+    dataReady.notify_all();
+
+    {
+        std::unique_lock<std::mutex> lock(mrun);
+        workComplete.wait(lock, [] { return nWorkerCount == 0; });
+    }
+
+    *GL_OPCODE = 0;
+
+    ::memcpy(ctext,GL_AES_CT,sym_block_size);
+
+    return 0;
+}
+
+int FPGA_PRF(unsigned char *ptext,unsigned char *key, unsigned char *ctext)
+{
+    {
+        std::lock_guard<std::mutex> lock(mrun);
+        ::memset(GL_AES_CT,0x00,sym_block_size);
+        ::memcpy(GL_AES_PT,ptext,sym_block_size);
+        ::memcpy(GL_AES_KT,key,16);
+
+        *GL_OPCODE = 9;
 
         nWorkerCount = N_threads;
         ++nCurrentIteration;
